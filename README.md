@@ -140,8 +140,8 @@ We welcome contributions! Please follow these guidelines:
   [![Email](https://img.shields.io/badge/Email-omarahmed%40gmail.com-red)](mailto:Omar.ahmed.attia123@gmail.com)
 
 - **Amer Hatem**  
-  [![GitHub](https://img.shields.io/badge/GitHub-amrhatem-blue)](https://github.com/amrhatem)  
-  [![Email](https://img.shields.io/badge/Email-amrhatem%40gmail.com-red)](mailto:amrhatem@gmail.com)
+  [![GitHub](https://img.shields.io/badge/GitHub-amrhatem-blue)](https://github.com/moraa121212)  
+  [![Email](https://img.shields.io/badge/Email-amrhatem%40gmail.com-red)](mailto:amr.hatem2h@gmail.com)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
