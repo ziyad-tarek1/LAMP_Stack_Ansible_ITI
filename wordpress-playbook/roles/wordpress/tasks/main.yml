@@ -21,30 +21,17 @@
     - mariadb
 
 - name: Secure MariaDB installation
+  command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
+
+- name: Creating the needed DB in MariaDB
   shell: |
-    mysql -u root <<EOF
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}';
-    DELETE FROM mysql.user WHERE User='';
-    DROP DATABASE test;
-    DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-    FLUSH PRIVILEGES;
-    EOF
+    mysql -u root -p{{ db_root_password }} -e "CREATE DATABASE {{ wp_db_name }};"
+    mysql -u root -p{{ db_root_password }} -e "CREATE USER '{{ wp_db_user }}'@'localhost' IDENTIFIED BY '{{ wp_db_password }}';"
+    mysql -u root -p{{ db_root_password }} -e "GRANT ALL PRIVILEGES ON {{ wp_db_name }}.* TO '{{ wp_db_user }}'@'localhost';"
+    mysql -u root -p{{ db_root_password }} -e "FLUSH PRIVILEGES;"
   args:
     executable: /bin/bash
-  notify: Restart MariaDB
 
-- name: Create WordPress database and user
-  mysql_db:
-    name: "{{ wp_db_name }}"
-    state: present
-
-- name: Create WordPress user
-  mysql_user:
-    name: "{{ wp_db_user }}"
-    password: "{{ wp_db_password }}"
-    priv: "{{ wp_db_name }}.*:ALL"
-    host: localhost
-    state: present
 
 - name: Install PHP 8.2 and required modules
   dnf:
@@ -67,6 +54,7 @@
     curl -O https://wordpress.org/latest.tar.gz
     tar -xzf latest.tar.gz
     mv wordpress/* .
+    cp wp-config-sample.php wp-config.php  # Add this line to create the config file
     rm -rf wordpress latest.tar.gz
   args:
     executable: /bin/bash
@@ -85,9 +73,9 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     backrefs: yes
-  with_items:
-    - { regexp: "define\\('DB_NAME', '.*'\\);", line: "define('DB_NAME', '{{ wp_db_name }}');" }
-    - { regexp: "define\\('DB_USER', '.*'\\);", line: "define('DB_USER', '{{ wp_db_user }}');" }
-    - { regexp: "define\\('DB_PASSWORD', '.*'\\);", line: "define('DB_PASSWORD', '{{ wp_db_password }}');" }
-    - { regexp: "define\\('DB_HOST', '.*'\\);", line: "define('DB_HOST', 'localhost');" }
-
+  loop:
+    - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
+    - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
+    - { regexp: "define\\s*\\(\\s*'DB_PASSWORD'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_PASSWORD', '{{ wp_db_password }}' );" }
+    - { regexp: "define\\s*\\(\\s*'DB_HOST'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_HOST', 'localhost' );" }
+  notify: Restart Apache
