@@ -2,7 +2,7 @@
 - name: Update system packages
   ansible.builtin.yum:
     name: "*"
-    state: latest  
+    state: latest
 
 - name: Install Apache & MariaDB
   ansible.builtin.yum:
@@ -15,13 +15,14 @@
   ansible.builtin.systemd:
     name: "{{ item }}"
     state: started
-    enabled: true  
+    enabled: true
   loop:
     - httpd
     - mariadb
 
 - name: Secure MariaDB installation
-  command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
+  ansible.builtin.command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
+  changed_when: false
 
 - name: Creating the needed DB in MariaDB
   ansible.builtin.shell: |
@@ -31,6 +32,7 @@
     mysql -u root -p{{ db_root_password }} -e "FLUSH PRIVILEGES;"
   args:
     executable: /bin/bash
+  changed_when: false
 
 
 - name: Install PHP 8.2 and required modules
@@ -45,7 +47,7 @@
       - php-cli
       - php-gd
       - php-curl
-    state: present  
+    state: present
   notify: Restart Apache
 
 - name: Download and extract WordPress
@@ -58,6 +60,7 @@
     rm -rf wordpress latest.tar.gz
   args:
     executable: /bin/bash
+  changed_when: false
 
 - name: Set correct permissions
   ansible.builtin.file:
@@ -65,17 +68,19 @@
     owner: apache
     group: apache
     mode: '0755'
-    recurse: true  
+    recurse: true
+  changed_when: false
 
 - name: Configure WordPress database connection
   ansible.builtin.lineinfile:
     path: "{{ document_root }}/wp-config.php"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
-    backrefs: true  
+    backrefs: true
   loop:
     - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
     - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
     - { regexp: "define\\s*\\(\\s*'DB_PASSWORD'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_PASSWORD', '{{ wp_db_password }}' );" }
     - { regexp: "define\\s*\\(\\s*'DB_HOST'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_HOST', 'localhost' );" }
   notify: Restart Apache
+  changed_when: false
