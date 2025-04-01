@@ -1,21 +1,21 @@
 ---
 - name: Update system packages
-  yum:
+  ansible.builtin.yum:
     name: "*"
-    state: latest
+    state: latest  
 
 - name: Install Apache & MariaDB
-  yum:
+  ansible.builtin.yum:
     name:
       - httpd
       - mariadb105-server
     state: present
 
 - name: Start and enable services
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ item }}"
     state: started
-    enabled: yes
+    enabled: true  
   loop:
     - httpd
     - mariadb
@@ -24,7 +24,7 @@
   command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
 
 - name: Creating the needed DB in MariaDB
-  shell: |
+  ansible.builtin.shell: |
     mysql -u root -p{{ db_root_password }} -e "CREATE DATABASE {{ wp_db_name }};"
     mysql -u root -p{{ db_root_password }} -e "CREATE USER '{{ wp_db_user }}'@'localhost' IDENTIFIED BY '{{ wp_db_password }}';"
     mysql -u root -p{{ db_root_password }} -e "GRANT ALL PRIVILEGES ON {{ wp_db_name }}.* TO '{{ wp_db_user }}'@'localhost';"
@@ -34,7 +34,7 @@
 
 
 - name: Install PHP 8.2 and required modules
-  dnf:
+  ansible.builtin.dnf:
     name:
       - php8.2
       - php-mysqlnd
@@ -45,11 +45,11 @@
       - php-cli
       - php-gd
       - php-curl
-    state: present
+    state: present  
   notify: Restart Apache
 
 - name: Download and extract WordPress
-  shell: |
+  ansible.builtin.shell: |
     cd {{ document_root }}
     curl -O https://wordpress.org/latest.tar.gz
     tar -xzf latest.tar.gz
@@ -60,19 +60,19 @@
     executable: /bin/bash
 
 - name: Set correct permissions
-  file:
+  ansible.builtin.file:
     path: "{{ document_root }}"
     owner: apache
     group: apache
     mode: '0755'
-    recurse: yes
+    recurse: true  
 
 - name: Configure WordPress database connection
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ document_root }}/wp-config.php"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
-    backrefs: yes
+    backrefs: true  
   loop:
     - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
     - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
