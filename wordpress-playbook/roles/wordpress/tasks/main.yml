@@ -1,0 +1,93 @@
+---
+- name: Update system packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: Install Apache & MariaDB
+  yum:
+    name:
+      - httpd
+      - mariadb105-server
+    state: present
+
+- name: Start and enable services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - httpd
+    - mariadb
+
+- name: Secure MariaDB installation
+  shell: |
+    mysql -u root <<EOF
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}';
+    DELETE FROM mysql.user WHERE User='';
+    DROP DATABASE test;
+    DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+    FLUSH PRIVILEGES;
+    EOF
+  args:
+    executable: /bin/bash
+  notify: Restart MariaDB
+
+- name: Create WordPress database and user
+  mysql_db:
+    name: "{{ wp_db_name }}"
+    state: present
+
+- name: Create WordPress user
+  mysql_user:
+    name: "{{ wp_db_user }}"
+    password: "{{ wp_db_password }}"
+    priv: "{{ wp_db_name }}.*:ALL"
+    host: localhost
+    state: present
+
+- name: Install PHP 8.2 and required modules
+  dnf:
+    name:
+      - php8.2
+      - php-mysqlnd
+      - php-fpm
+      - php-json
+      - php-mbstring
+      - php-xml
+      - php-cli
+      - php-gd
+      - php-curl
+    state: present
+  notify: Restart Apache
+
+- name: Download and extract WordPress
+  shell: |
+    cd {{ document_root }}
+    curl -O https://wordpress.org/latest.tar.gz
+    tar -xzf latest.tar.gz
+    mv wordpress/* .
+    rm -rf wordpress latest.tar.gz
+  args:
+    executable: /bin/bash
+
+- name: Set correct permissions
+  file:
+    path: "{{ document_root }}"
+    owner: apache
+    group: apache
+    mode: '0755'
+    recurse: yes
+
+- name: Configure WordPress database connection
+  lineinfile:
+    path: "{{ document_root }}/wp-config.php"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "define\\('DB_NAME', '.*'\\);", line: "define('DB_NAME', '{{ wp_db_name }}');" }
+    - { regexp: "define\\('DB_USER', '.*'\\);", line: "define('DB_USER', '{{ wp_db_user }}');" }
+    - { regexp: "define\\('DB_PASSWORD', '.*'\\);", line: "define('DB_PASSWORD', '{{ wp_db_password }}');" }
+    - { regexp: "define\\('DB_HOST', '.*'\\);", line: "define('DB_HOST', 'localhost');" }
+
