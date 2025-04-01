@@ -136,8 +136,8 @@ We welcome contributions! Please follow these guidelines:
   [![Email](https://img.shields.io/badge/Email-ziyadtarek180%40gmail.com-red)](mailto:ziyadtarek180@gmail.com)
 
 - **Omar Ahmed**  
-  [![GitHub](https://img.shields.io/badge/GitHub-omarahmed-blue)](https://github.com/omarahmed)  
-  [![Email](https://img.shields.io/badge/Email-omarahmed%40gmail.com-red)](mailto:omarahmed@gmail.com)
+  [![GitHub](https://img.shields.io/badge/GitHub-omarahmed-blue)](https://github.com/OmarEltabakh123)  
+  [![Email](https://img.shields.io/badge/Email-omarahmed%40gmail.com-red)](mailto:Omar.ahmed.attia123@gmail.com)
 
 - **Amer Hatem**  
   [![GitHub](https://img.shields.io/badge/GitHub-amrhatem-blue)](https://github.com/amrhatem)  
