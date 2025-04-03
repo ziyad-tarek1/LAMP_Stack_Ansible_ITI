@@ -6,11 +6,11 @@
 
 Automated deployment of a LAMP stack (Linux, Apache, MariaDB, PHP) with WordPress on Amazon Linux 2023 EC2 instances.
 
-## Overview
+## 📌 Overview
 This Ansible project automates the complete setup and configuration of a WordPress website on AWS EC2 instances. It is developed as the final project for Ansible Course at the Information Technology Institute (ITI) System Admin training.
 
 
-## Features
+## ✨ Features
 - Full LAMP stack installation
 - Automated WordPress deployment
 - Secure MariaDB configuration
@@ -19,14 +19,14 @@ This Ansible project automates the complete setup and configuration of a WordPre
 - Proper file permissions management
 - Database creation and user setup
 
-## Prerequisites
+## 📋 Prerequisites
 - Ansible 2.9+
 - Amazon Linux 2023 EC2 instance
 - SSH access to target machine
 - Inventory file configured with EC2 instance details
 
 
-## Project Structure
+## 📂 Project Structure
 
 ```bash
 .
@@ -56,7 +56,7 @@ This Ansible project automates the complete setup and configuration of a WordPre
 
 ```
 
-### File Descriptions:
+### 📂 File Descriptions:
 - **LAMP.sh**: Bash script implementation of the LAMP stack setup (alternative to Ansible)
 - **inventory.ini**: Contains target EC2 instance connection details
 - **playbook.yml**: Orchestrates role execution and playbook flow
@@ -140,7 +140,7 @@ After running the playbook, you should see output similar to this:
 ![WordPress Main Page](https://github.com/user-attachments/assets/6c90b9b8-541f-41b2-8a21-d4b7b0cea723)  
 
 
-## Configuration
+## ⚙️ Configuration
 The playbook handles the following automatic configurations:
 - System package updates
 - Apache & MariaDB installation
@@ -150,7 +150,7 @@ The playbook handles the following automatic configurations:
 - Secure MariaDB configuration
 - Proper file ownership and permissions
 
-## Contributing
+## 🤝 Contributing
 
 We welcome contributions! Please follow these guidelines:
 
@@ -172,7 +172,7 @@ We welcome contributions! Please follow these guidelines:
 - Update documentation (README) with any changes
 
 
-## Authors
+## 👨‍💻 Authors
 - **Ziyad Tarek**  
   [![GitHub](https://img.shields.io/badge/GitHub-ziyad--tarek1-blue)](https://github.com/ziyad-tarek1)  
   [![Email](https://img.shields.io/badge/Email-ziyadtarek180%40gmail.com-red)](mailto:ziyadtarek180@gmail.com)
@@ -185,7 +185,7 @@ We welcome contributions! Please follow these guidelines:
   [![GitHub](https://img.shields.io/badge/GitHub-amrhatem-blue)](https://github.com/moraa121212)  
   [![Email](https://img.shields.io/badge/Email-amrhatem%40gmail.com-red)](mailto:amr.hatem2h@gmail.com)
 
-## License
+## 📜 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
