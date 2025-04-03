@@ -56,7 +56,7 @@
     curl -O https://wordpress.org/latest.tar.gz
     tar -xzf latest.tar.gz
     mv wordpress/* .
-    cp wp-config-sample.php wp-config.php  
+    cp wp-config-sample.php wp-config.php
     rm -rf wordpress latest.tar.gz
   args:
     executable: /bin/bash
