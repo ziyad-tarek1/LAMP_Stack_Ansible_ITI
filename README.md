@@ -71,6 +71,31 @@ This Ansible project automates the complete setup and configuration of a WordPre
 - **roles/wordpress/vars/main.yml**: For environment-specific variable overrides
 
 
+# 📘 Documentation Used  
+
+## AWS Documentation  
+- [EC2 LAMP on Amazon Linux 2023](https://docs.aws.amazon.com/linux/al2023/ug/ec2-lamp-amazon-linux-2023.html)  
+- [EC2 LAMP on Amazon Linux 2](https://docs.aws.amazon.com/linux/al2/ug/ec2-lamp-amazon-linux-2.html#prepare-lamp-server)  
+
+## Ansible Documentation  
+- **Package Management:**  
+  - [`ansible.builtin.yum`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/yum_module.html)  
+  - [`ansible.builtin.dnf`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/dnf_module.html)  
+
+- **Service Management:**  
+  - [`ansible.builtin.systemd_service`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_service_module.html)  
+
+- **Command Execution:**  
+  - [`ansible.builtin.command`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html)  
+  - [`ansible.builtin.shell`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html)  
+
+- **File and Configuration Management:**  
+  - [`ansible.builtin.file`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html)  
+  - [`ansible.builtin.lineinfile`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html)  
+
+- **Playbook and Role Reusability:**  
+  - [Reusing Playbooks with Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)  
+
 ## Installation
 1. Clone the repository:
 ```bash
