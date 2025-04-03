@@ -122,6 +122,23 @@ wp_db_password: StrongPassword!
 ```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
+## ✅ Deployment Output  
+
+### 📜 Playbook Execution Output  
+After running the playbook, you should see output similar to this:  
+
+![Playbook Execution Output](https://github.com/user-attachments/assets/c4c795b7-2035-4165-bd6c-dcdb381b7175)  
+
+---
+
+## 🎨 WordPress Interface  
+
+### 🔐 WordPress Login Page  
+![WordPress Login Page](https://github.com/user-attachments/assets/e2d62494-e606-4dc5-8287-10f466c36fcf)  
+
+### 🏠 WordPress Main Page  
+![WordPress Main Page](https://github.com/user-attachments/assets/6c90b9b8-541f-41b2-8a21-d4b7b0cea723)  
+
 
 ## Configuration
 The playbook handles the following automatic configurations:
