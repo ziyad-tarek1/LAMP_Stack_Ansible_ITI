@@ -76,8 +76,8 @@ This Ansible project automates the complete setup and configuration of a WordPre
 ## AWS Documentation  
 - [EC2 LAMP on Amazon Linux 2023](https://docs.aws.amazon.com/linux/al2023/ug/ec2-lamp-amazon-linux-2023.html)  
 - [EC2 LAMP on Amazon Linux 2](https://docs.aws.amazon.com/linux/al2/ug/ec2-lamp-amazon-linux-2.html#prepare-lamp-server)  
-
 ## Ansible Documentation  
+
 - **Package Management:**  
   - [`ansible.builtin.yum`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/yum_module.html)  
   - [`ansible.builtin.dnf`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/dnf_module.html)  
@@ -92,6 +92,11 @@ This Ansible project automates the complete setup and configuration of a WordPre
 - **File and Configuration Management:**  
   - [`ansible.builtin.file`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html)  
   - [`ansible.builtin.lineinfile`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html)  
+
+- **File Operations:**  
+  - [`ansible.builtin.copy`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html)  
+  - [`ansible.builtin.unarchive`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/unarchive_module.html)  
+  - [`ansible.builtin.get_url`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html)  
 
 - **Playbook and Role Reusability:**  
   - [Reusing Playbooks with Roles](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)  
