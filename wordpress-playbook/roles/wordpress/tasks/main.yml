@@ -1,86 +1,91 @@
 ---
-- name: Update system packages
-  ansible.builtin.yum:
-    name: "*"
-    state: latest
+  - name: Update system packages
+    ansible.builtin.yum:
+      name: "*"
+      state: latest
 
-- name: Install Apache & MariaDB
-  ansible.builtin.yum:
-    name:
+  - name: Install Apache & MariaDB
+    ansible.builtin.yum:
+      name:
+        - httpd
+        - mariadb105-server
+      state: present
+
+  - name: Start and enable services
+    ansible.builtin.systemd:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop:
       - httpd
-      - mariadb105-server
-    state: present
+      - mariadb
 
-- name: Start and enable services
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: started
-    enabled: true
-  loop:
-    - httpd
-    - mariadb
+  - name: Secure MariaDB installation
+    ansible.builtin.command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
+    changed_when: false
 
-- name: Secure MariaDB installation
-  ansible.builtin.command: mysql -u root -p{{ db_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_root_password }}'; DELETE FROM mysql.user WHERE User=''; DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DROP DATABASE IF EXISTS test; FLUSH PRIVILEGES;"
-  changed_when: false
+  - name: Creating the needed DB in MariaDB
+    ansible.builtin.shell: |
+      mysql -u root -p{{ db_root_password }} -e "CREATE DATABASE {{ wp_db_name }};"
+      mysql -u root -p{{ db_root_password }} -e "CREATE USER '{{ wp_db_user }}'@'localhost' IDENTIFIED BY '{{ wp_db_password }}';"
+      mysql -u root -p{{ db_root_password }} -e "GRANT ALL PRIVILEGES ON {{ wp_db_name }}.* TO '{{ wp_db_user }}'@'localhost';"
+      mysql -u root -p{{ db_root_password }} -e "FLUSH PRIVILEGES;"
+    args:
+      executable: /bin/bash
+    changed_when: false   
+    
+  - name: Install PHP 8.2 and required modules
+    ansible.builtin.dnf:
+      name:
+        - php8.2
+        - php-mysqlnd
+        - php-fpm
+        - php-json
+        - php-mbstring
+        - php-xml
+        - php-cli
+        - php-gd
+        - php-curl
+      state: present
+    notify: Restart Apache
 
-- name: Creating the needed DB in MariaDB
-  ansible.builtin.shell: |
-    mysql -u root -p{{ db_root_password }} -e "CREATE DATABASE {{ wp_db_name }};"
-    mysql -u root -p{{ db_root_password }} -e "CREATE USER '{{ wp_db_user }}'@'localhost' IDENTIFIED BY '{{ wp_db_password }}';"
-    mysql -u root -p{{ db_root_password }} -e "GRANT ALL PRIVILEGES ON {{ wp_db_name }}.* TO '{{ wp_db_user }}'@'localhost';"
-    mysql -u root -p{{ db_root_password }} -e "FLUSH PRIVILEGES;"
-  args:
-    executable: /bin/bash
-  changed_when: false
+  - name: Download WordPress
+    ansible.builtin.get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp/latest.tar.gz
 
+  - name: Extract WordPress
+    ansible.builtin.unarchive:
+      src: /tmp/latest.tar.gz
+      dest: "{{ document_root }}"
+      remote_src: true
+      extra_opts: [--strip-components=1]
+      creates: "{{ document_root }}/wp-config-sample.php"   # to keep the idempotency
 
-- name: Install PHP 8.2 and required modules
-  ansible.builtin.dnf:
-    name:
-      - php8.2
-      - php-mysqlnd
-      - php-fpm
-      - php-json
-      - php-mbstring
-      - php-xml
-      - php-cli
-      - php-gd
-      - php-curl
-    state: present
-  notify: Restart Apache
+  - name: Copy wp-config-sample.php to wp-config.php if it doesn't exist
+    ansible.builtin.copy:
+      src: "{{ document_root }}/wp-config-sample.php"
+      dest: "{{ document_root }}/wp-config.php"
+      remote_src: true
+      force: false    # to keep the idempotency
 
-- name: Download and extract WordPress
-  ansible.builtin.shell: |
-    cd {{ document_root }}
-    curl -O https://wordpress.org/latest.tar.gz
-    tar -xzf latest.tar.gz
-    mv wordpress/* .
-    cp wp-config-sample.php wp-config.php
-    rm -rf wordpress latest.tar.gz
-  args:
-    executable: /bin/bash
-  changed_when: false
+  - name: Set correct permissions
+    ansible.builtin.file:
+      path: "{{ document_root }}"
+      owner: apache
+      group: apache
+      mode: '0755'
+      recurse: true
 
-- name: Set correct permissions
-  ansible.builtin.file:
-    path: "{{ document_root }}"
-    owner: apache
-    group: apache
-    mode: '0755'
-    recurse: true
-  changed_when: false
+  - name: Configure WordPress database connection
+    ansible.builtin.lineinfile:
+      path: "{{ document_root }}/wp-config.php"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      backrefs: true
+    loop:
+      - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
+      - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
+      - { regexp: "define\\s*\\(\\s*'DB_PASSWORD'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_PASSWORD', '{{ wp_db_password }}' );" }
+    notify: Restart Apache
 
-- name: Configure WordPress database connection
-  ansible.builtin.lineinfile:
-    path: "{{ document_root }}/wp-config.php"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    backrefs: true
-  loop:
-    - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
-    - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
-    - { regexp: "define\\s*\\(\\s*'DB_PASSWORD'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_PASSWORD', '{{ wp_db_password }}' );" }
-    - { regexp: "define\\s*\\(\\s*'DB_HOST'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_HOST', 'localhost' );" }
-  notify: Restart Apache
-  changed_when: false
