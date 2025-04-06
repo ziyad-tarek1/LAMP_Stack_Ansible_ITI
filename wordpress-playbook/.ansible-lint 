@@ -1,0 +1,38 @@
+---
+exclude_paths:
+  - files/
+  - templates/
+  - .github/
+
+skip_list:
+  - yaml[line-length]
+  - schema[meta]
+
+warn_list:
+  - no-changed-when
+  - risky-shell-pipe
+
+enable_list:
+  - !skip
+
+format: rich
+verbosity: 1
+showrelpath: true
+
+group-by: severity
+order: filename
+
+msg_format: |-
+  [{level}] {rule} ({tag})
+  ↳ {message}
+  📍 File: {path}:{line}
+  🔗 Guide: https://ansible-lint.readthedocs.io/rules/{rule}/
+
+tags:
+  security:
+    - risky-file-permissions
+  formatting:
+    - yaml[truthy]
+    - fqcn[action-core]
+  idempotency:
+    - no-changed-when

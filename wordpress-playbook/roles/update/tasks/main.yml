@@ -1,0 +1,4 @@
+- name: Update system packages
+  ansible.builtin.yum:
+    name: "*"
+    state: latest

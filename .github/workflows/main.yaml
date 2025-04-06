@@ -1,0 +1,25 @@
+name: Ansible Lint
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "wordpress-playbook/**"
+  # pull_request:
+  #   paths:
+  #     - "wordpress-playbook/**"
+
+jobs:
+  ansible-lint:
+    name: Run Ansible Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint-action@v6  
+        with:
+          path: "wordpress-playbook/"  

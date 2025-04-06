@@ -1,0 +1,14 @@
+- name: Install PHP 8.2 and required modules
+  ansible.builtin.dnf:
+    name:
+      - php8.2
+      - php-mysqlnd
+      - php-fpm
+      - php-json
+      - php-mbstring
+      - php-xml
+      - php-cli
+      - php-gd
+      - php-curl
+    state: present
+  notify: Restart Apache

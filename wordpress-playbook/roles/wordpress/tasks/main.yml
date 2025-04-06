@@ -1,0 +1,39 @@
+- name: Download WordPress
+  ansible.builtin.get_url:
+    url: https://wordpress.org/latest.tar.gz
+    dest: /tmp/latest.tar.gz
+
+- name: Extract WordPress
+  ansible.builtin.unarchive:
+    src: /tmp/latest.tar.gz
+    dest: "{{ document_root }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ document_root }}/wp-config-sample.php"
+
+- name: Copy wp-config-sample.php to wp-config.php if it doesn't exist
+  ansible.builtin.copy:
+    src: "{{ document_root }}/wp-config-sample.php"
+    dest: "{{ document_root }}/wp-config.php"
+    remote_src: true
+    force: false
+
+- name: Set correct permissions
+  ansible.builtin.file:
+    path: "{{ document_root }}"
+    owner: apache
+    group: apache
+    mode: '0755'
+    recurse: true
+
+- name: Configure WordPress database connection
+  ansible.builtin.lineinfile:
+    path: "{{ document_root }}/wp-config.php"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: true
+  loop:
+    - { regexp: "define\\s*\\(\\s*'DB_NAME'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_NAME', '{{ wp_db_name }}' );" }
+    - { regexp: "define\\s*\\(\\s*'DB_USER'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_USER', '{{ wp_db_user }}' );" }
+    - { regexp: "define\\s*\\(\\s*'DB_PASSWORD'\\s*,\\s*'.*'\\s*\\)\\s*;", line: "define( 'DB_PASSWORD', '{{ wp_db_password }}' );" }
+  notify: Restart Apache

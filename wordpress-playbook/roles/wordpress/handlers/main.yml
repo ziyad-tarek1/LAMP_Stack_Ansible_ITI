@@ -1,0 +1,10 @@
+---
+- name: Restart Apache
+  ansible.builtin.systemd_service:
+    name: httpd
+    state: restarted
+
+- name: Restart MariaDB
+  ansible.builtin.systemd_service:
+    name: mariadb
+    state: restarted
