@@ -1,6 +1,6 @@
----
-db_root_password: "StrongRootPassword"
-wp_db_name: "wordpress"
-wp_db_user: "wpuser"
-wp_db_password: "StrongPassword!"
-document_root: "/var/www/html"
+# ---
+# db_root_password: "StrongRootPassword"
+# wp_db_name: "wordpress"
+# wp_db_user: "wpuser"
+# wp_db_password: "StrongPassword!"
+# document_root: "/var/www/html"
