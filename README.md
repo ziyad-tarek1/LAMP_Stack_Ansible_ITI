@@ -6,6 +6,9 @@
 
 Automated deployment of a LAMP stack (Linux, Apache, MariaDB, PHP) with WordPress on Amazon Linux 2023 EC2 instances.
 
+![Ansible-project](https://github.com/user-attachments/assets/3976cffc-0de3-4fdf-915d-ec94abf8fa8c)
+
+
 ## 📌 Overview
 This Ansible project automates the complete setup and configuration of a WordPress website on AWS EC2 instances. It is developed as the final project for Ansible Course at the Information Technology Institute (ITI) System Admin training.
 
