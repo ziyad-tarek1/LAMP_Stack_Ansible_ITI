@@ -33,53 +33,46 @@ This Ansible project automates the complete setup and configuration of a WordPre
 
 ```bash
 .
-├── LICENSE                         # Project license 
-├── README.md                      # project overview and usage instructions
-│
-├── wordpress-bashscript           # Bash script for setting up a LAMP stack and WordPress
-│   └── LAMP.sh                    # Installs Apache, MariaDB, PHP, and WordPress manually via bash
-│
-├── wordpress-manualsetup          #  Guide for manual installation of WordPress
-│   └── README.md                  # Instructions for installing and configuring WordPress manually
-│
-├── wordpress-playbook             #  Ansible playbook for automating WordPress deployment
-│
-│   ├── inventory.ini              # Inventory file with host definitions 
-│   ├── playbook.yml               # Main Ansible playbook that includes all roles
-│
-│   └── roles                      #  Ansible roles for modular configuration
-│       ├── apache/                # Role for installing and configuring Apache web server
-│       │   └── tasks/
-│       │       └── main.yml      # Apache installation and configuration tasks
-│
-│       ├── mariadb/              # Role for installing and configuring MariaDB (MySQL-compatible)
-│       │   ├── defaults/
-│       │   │   └── main.yml      # Default variables for MariaDB 
-│       │   ├── tasks/
-│       │   │   └── main.yml      # Tasks for installing and securing MariaDB
-│       │   └── vars/
-│       │       └── main.yml      # Static variables for MariaDB
-│
-│       ├── php/                  # Role for installing PHP and modules
-│       │   └── tasks/
-│       │       └── main.yml      # PHP installation tasks
-│
-│       ├── update/               # Role to update system packages
-│       │   └── tasks/
-│       │       └── main.yml      # System update commands using `yum` or `apt`
-│
-│       └── wordpress/            # Role for downloading and configuring WordPress
-│           ├── README.md         # Role-specific notes and usage
-│           ├── defaults/
-│           │   └── main.yml      # Default variables (e.g., WordPress version, paths)
-│           ├── handlers/
-│           │   └── main.yml      # Handlers (e.g., restart Apache if configs change)
-│           ├── meta/
-│           │   └── main.yml      # Metadata about the role (dependencies, etc.)
-│           ├── tasks/
-│           │   └── main.yml      # WordPress download, extract, permissions, config
-│           └── vars/
-│               └── main.yml      # Static variables like database name, user, etc.
+├── LICENSE                              # Project license
+├── README.md                            # Project overview and documentation
+├── wordpress-bashscript/                # Bash-based LAMP stack deployment
+│   └── LAMP.sh                          # Script to install and configure LAMP stack manually
+├── wordpress-manualsetup/              # Manual WordPress setup guide
+│   └── README.md                        # Step-by-step manual installation instructions
+└── wordpress-playbook/                 # Ansible-based WordPress automated deployment
+    ├── group_vars/
+    │   └── wordpress/
+    │       └── main.yml                # Shared variables for the 'wordpress' group (used across roles)
+    ├── inventory.ini                   # Ansible inventory with WordPress hosts
+    ├── playbook.yml                    # Main Ansible playbook to deploy the full LAMP + WordPress stack
+    └── roles/                          # Ansible roles, each responsible for a layer of the stack
+        ├── apache/
+        │   └── tasks/
+        │       └── main.yml            # Tasks for installing and configuring Apache
+        ├── mariadb/
+        │   ├── defaults/
+        │   │   └── main.yml            # Default MariaDB variables (removed after using group vars)
+        │   ├── tasks/
+        │   │   └── main.yml            # MariaDB installation and configuration tasks
+        │   └── vars/
+        │       └── main.yml            # MariaDB-specific variables (removed after using group vars)
+        ├── php/
+        │   └── tasks/
+        │       └── main.yml            # Tasks for installing PHP and required modules
+        ├── update/
+        │   └── tasks/
+        │       └── main.yml            # System update and basic package management
+        └── wordpress/
+            ├── defaults/
+            │   └── main.yml            # Default variables for WordPress
+            ├── handlers/
+            │   └── main.yml            # Handlers 
+            ├── meta/
+            │   └── main.yml            # Role metadata 
+            ├── tasks/
+            │   └── main.yml            # Tasks to install and configure WordPress
+            └── vars/
+                └── main.yml            # WordPress-specific variables (removed after using group vars)
 
 ```
 
