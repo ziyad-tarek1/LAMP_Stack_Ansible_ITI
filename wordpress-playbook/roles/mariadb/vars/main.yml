@@ -1,4 +1,4 @@
-db_root_password: "StrongRootPassword"
-wp_db_name: "wordpress"
-wp_db_user: "wpuser"
-wp_db_password: "StrongPassword!"
+# db_root_password: "StrongRootPassword"
+# wp_db_name: "wordpress"
+# wp_db_user: "wpuser"
+# wp_db_password: "StrongPassword!"
