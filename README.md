@@ -33,29 +33,53 @@ This Ansible project automates the complete setup and configuration of a WordPre
 
 ```bash
 .
-├── README.md                         # Main documentation file
-├── wordpress-bashscript
-│   └── LAMP.sh                      # Bash script alternative for manual LAMP stack setup
-├── wordpress-manualsetup
-│   └── README.md                    # Manual installation instructions (reference)
-└── wordpress-playbook               # Main Ansible playbook directory
-    ├── inventory.ini                # Ansible inventory file with target hosts
-    ├── playbook.yml                 # Main playbook entry point
-    └── roles
-        └── wordpress                # Ansible role for WordPress setup
-            ├── defaults
-            │   └── main.yml         # Default variables for the role
-            ├── files                # Static files to copy to target machines
-            ├── handlers
-            │   └── main.yml         # Handler definitions (e.g., service restarts)
-            ├── meta
-            │   └── main.yml         # Role metadata and dependencies
-            ├── README.md           # Role-specific documentation
-            ├── tasks
-            │   └── main.yml         # Main tasks file for role execution
-            ├── templates           # Jinja2 templates for configuration files
-            └── vars
-                └── main.yml         # Variable overrides for the role
+├── LICENSE                         # Project license 
+├── README.md                      # project overview and usage instructions
+│
+├── wordpress-bashscript           # Bash script for setting up a LAMP stack and WordPress
+│   └── LAMP.sh                    # Installs Apache, MariaDB, PHP, and WordPress manually via bash
+│
+├── wordpress-manualsetup          #  Guide for manual installation of WordPress
+│   └── README.md                  # Instructions for installing and configuring WordPress manually
+│
+├── wordpress-playbook             #  Ansible playbook for automating WordPress deployment
+│
+│   ├── inventory.ini              # Inventory file with host definitions 
+│   ├── playbook.yml               # Main Ansible playbook that includes all roles
+│
+│   └── roles                      #  Ansible roles for modular configuration
+│       ├── apache/                # Role for installing and configuring Apache web server
+│       │   └── tasks/
+│       │       └── main.yml      # Apache installation and configuration tasks
+│
+│       ├── mariadb/              # Role for installing and configuring MariaDB (MySQL-compatible)
+│       │   ├── defaults/
+│       │   │   └── main.yml      # Default variables for MariaDB 
+│       │   ├── tasks/
+│       │   │   └── main.yml      # Tasks for installing and securing MariaDB
+│       │   └── vars/
+│       │       └── main.yml      # Static variables for MariaDB
+│
+│       ├── php/                  # Role for installing PHP and modules
+│       │   └── tasks/
+│       │       └── main.yml      # PHP installation tasks
+│
+│       ├── update/               # Role to update system packages
+│       │   └── tasks/
+│       │       └── main.yml      # System update commands using `yum` or `apt`
+│
+│       └── wordpress/            # Role for downloading and configuring WordPress
+│           ├── README.md         # Role-specific notes and usage
+│           ├── defaults/
+│           │   └── main.yml      # Default variables (e.g., WordPress version, paths)
+│           ├── handlers/
+│           │   └── main.yml      # Handlers (e.g., restart Apache if configs change)
+│           ├── meta/
+│           │   └── main.yml      # Metadata about the role (dependencies, etc.)
+│           ├── tasks/
+│           │   └── main.yml      # WordPress download, extract, permissions, config
+│           └── vars/
+│               └── main.yml      # Static variables like database name, user, etc.
 
 ```
 
